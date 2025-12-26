@@ -14,7 +14,7 @@ export default function Home() {
           className="w-[360px] p-2 pl-10 border border-gray-400 rounded-lg bg-white placeholder-gray-500 focus:ring-green-500 focus:border-red-500"
         />
       </div>
-      <ul className="flex flex-col items-center w-[400px]  h-[390px] overflow-y-auto ">
+      <ul className="flex flex-col items-center w-[400px] h-[500px] overflow-y-auto ">
         {Array.from({ length: 60 }).map((_, i) => (
           <li
             key={i}
