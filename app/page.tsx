@@ -14,7 +14,7 @@ export default function Home() {
             className="w-[360px] p-2 pl-10 border border-gray-400 rounded-lg bg-white placeholder-gray-500 focus:ring-green-500 focus:border-red-500"
           />
         </div>
-         <ul className="flex flex-col items-center w-[400px]  h-[500px] overflow-y-auto ">
+         <ul className="flex flex-col items-center w-[400px]  h-[350px] overflow-y-auto ">
              <li className="flex text-gray-800 w-[340px] items-start space-x-4 p-3 bg-white border border-gray-100 rounded-lg cursor-pointer transition duration-200 hover:bg-indigo-50 hover:shadow-md mb-3">
             <div 
                 className="flex-shrink-0 p-2  rounded-full mt-0.5" 
