@@ -8,6 +8,7 @@ export default function Home() {
   const [searchResult, setSearchResult] = useState("");
   const [chooseResult, setChooseResult] = useState(null);
   const [licenseNoInput, setLicenseNoInput] = useState("");
+  const [startTracking, setStartTracking] = useState(false);
 
   const displayBuslines = !searchResult ? busLineData : busLineData.filter(line => line.id === Number(searchResult))
 
@@ -19,16 +20,16 @@ export default function Home() {
 
     const hasConfirm = confirm(`You choose 🚌 bus line : " ${chooseResult.id} " with license number: "${licenseNoInput}" `);
     if(hasConfirm ) {
-        const res = await fetch('/api', {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json"
-          },
-          body: JSON.stringify({bus: chooseResult, licenseNo: licenseNoInput})
-        });
+        // const res = await fetch('/api', {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-type": "application/json"
+        //   },
+        //   body: JSON.stringify({bus: chooseResult, licenseNo: licenseNoInput})
+        // });
 
-        const result = await res.json();
-        console.log(result)
+        // const result = await res.json();
+      setStartTracking(true)
     }
   }
 
@@ -41,7 +42,7 @@ export default function Home() {
       </h1>
 
       {/* to choose bus line number  */}
-      {!chooseResult &&
+      {!chooseResult && !startTracking &&
         <div className="relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
           <input
@@ -55,7 +56,7 @@ export default function Home() {
       }
 
       <ul className="flex flex-col items-center w-[400px] h-[500px] overflow-y-auto ">
-        {!chooseResult && displayBuslines.map((data) => (
+        {!chooseResult && !startTracking && displayBuslines.map((data) => (
           <li
             onClick={() => handleChoosingBus(data)}
             key={data.id}
@@ -92,7 +93,7 @@ export default function Home() {
         ))}
 
         {/* show the chosen bus line number and input box for license number */}
-        {chooseResult &&
+        {chooseResult && !startTracking &&
           <>
             <li
               className="flex text-gray-800 w-[340px] items-start space-x-4 p-3 bg-white border border-gray-100 rounded-lg cmb-3">
@@ -166,6 +167,20 @@ export default function Home() {
               </p>
             </div>
           </li>
+        }
+        {startTracking &&
+            <li>
+              <div className="flex flex-col items-center justify-center p-8 text-center mt-20">
+                <p className="text-xl font-semibold mb-2">Bus line: &quot; {chooseResult.id} &quot;</p>
+                <p className="text-xl font-semibold mb-2">License number: &quot; {licenseNoInput} &quot;</p>
+                <p className="mt-5">
+                  . . . .  Start tracking bus line &quot; {chooseResult.id} &quot; . . . .
+                </p>
+                <p className="text-sm mt-5">
+                  Please Don&apos;t close your website :3
+                </p>
+              </div>
+            </li>
         }
       </ul>
     </div>
