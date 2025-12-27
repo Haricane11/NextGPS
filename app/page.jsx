@@ -20,15 +20,15 @@ export default function Home() {
 
     const hasConfirm = confirm(`You choose 🚌 bus line : " ${chooseResult.id} " with license number: "${licenseNoInput}" `);
     if(hasConfirm ) {
-        // const res = await fetch('/api', {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-type": "application/json"
-        //   },
-        //   body: JSON.stringify({bus: chooseResult, licenseNo: licenseNoInput})
-        // });
+        const res = await fetch('/api', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({bus: chooseResult, licenseNo: licenseNoInput})
+        });
 
-        // const result = await res.json();
+        const result = await res.json();
       setStartTracking(true)
     }
   }
