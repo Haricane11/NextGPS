@@ -13,71 +13,74 @@ export default function Home() {
   const displayBuslines = !searchResult ? busLineData : busLineData.filter(line => line.id === Number(searchResult))
 
   const handleChoosingBus = (bus) => {
-      setChooseResult(bus)
+    setChooseResult(bus)
   }
 
   const handleSubmitBus = async () => {
 
     const hasConfirm = confirm(`You choose 🚌 bus line : " ${chooseResult.id} " with license number: "${licenseNoInput}" `);
-    if(hasConfirm ) {
-        const res = await fetch('/api', {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json"
-          },
-          body: JSON.stringify({bus: chooseResult, licenseNo: licenseNoInput})
-        });
+    if (hasConfirm) {
 
-        const result = await res.json();
+
       setStartTracking(true)
     }
   }
 
+  const sendToRedis = async (longitude, latitude) => {
+    try {
+      const res = await fetch('/api', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({ member: licenseNoInput, longitude: longitude, latitude: latitude })
+      });
 
-    const [userLocation, setUserLocation] = useState(null);
-    
-    const lastLocation = useRef(0);
+      if (!res) {
+        const errorText = await res.json();
+        alert("Redis Sync Failed:", errorText.error)
+      }
+    } catch (error) {
+      alert("Network error", error)
+    } 
 
-   useEffect(() => {
-        if (!navigator.geolocation) {
-            console.error("Geolocation not supported");
-            return;
+  }
+
+
+
+  const lastLocation = useRef(0);
+
+  useEffect(() => {
+    if (!startTracking || !navigator.geolocation) return;
+
+    const watchId = navigator.geolocation.watchPosition(
+
+      (position) => {
+
+        const { longitude, latitude } = position.coords;
+        const newLocation = [longitude, latitude];
+
+        let distance = 0;
+
+        if (lastLocation.current) {
+          distance = turf.distance(
+            turf.point(lastLocation.current),
+            turf.point(newLocation),
+            { units: 'meters' }
+          )
         }
 
-        const watchId = navigator.geolocation.watchPosition(
+        if (!lastLocation.current || distance > 3) {
+          lastLocation.current = newLocation;
+          sendToRedis(longitude, latitude)
+        }
+      },
 
-            (position) => {
-
-                const { longitude, latitude } = position.coords;
-                const newLocation = [longitude,latitude];
-
-                let distance = 0;
-                console.log(newLocation)
-
-                if (lastLocation.current) {
-                  distance = turf.distance(
-                    turf.point(lastLocation.current),
-                    turf.point(newLocation),
-                    {units: 'meters'}
-                  ) 
-                }
-
-                if (!lastLocation.current || distance > 3) {
-                  console.log(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`);
-                  lastLocation.current = newLocation;
-                  setUserLocation(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`)
-                }
-
-            },
-
-            (error) => console.error(error),
-
-
-            { enableHighAccuracy: true }
-
-        );
-        return () => navigator.geolocation.clearWatch(watchId);
-    }, []);
+      (error) => console.error(error),
+      { enableHighAccuracy: true }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [startTracking]);
 
 
   return (
@@ -85,7 +88,6 @@ export default function Home() {
       <h1 className="border border-white bg-white text-black shadow-lg rounded-lg p-5">
         🚌. . . . GPS - Bus Tracking . . . . 🚌
       </h1>
-      <h1>{userLocation}</h1>
       {/* to choose bus line number  */}
       {!chooseResult && !startTracking &&
         <div className="relative">
@@ -214,18 +216,18 @@ export default function Home() {
           </li>
         }
         {startTracking &&
-            <li>
-              <div className="flex flex-col items-center justify-center p-8 text-center mt-20">
-                <p className="text-xl font-semibold mb-2">Bus line: &quot; {chooseResult.id} &quot;</p>
-                <p className="text-xl font-semibold mb-2">License number: &quot; {licenseNoInput} &quot;</p>
-                <p className="mt-5">
-                  . . . .  Start tracking bus line &quot; {chooseResult.id} &quot; . . . .
-                </p>
-                <p className="text-sm mt-5">
-                  Please Don&apos;t close your website :3
-                </p>
-              </div>
-            </li>
+          <li>
+            <div className="flex flex-col items-center justify-center p-8 text-center mt-20">
+              <p className="text-xl font-semibold mb-2">Bus line: &quot; {chooseResult.id} &quot;</p>
+              <p className="text-xl font-semibold mb-2">License number: &quot; {licenseNoInput} &quot;</p>
+              <p className="mt-5">
+                . . . .  Start tracking bus line &quot; {chooseResult.id} &quot; . . . .
+              </p>
+              <p className="text-sm mt-5">
+                Please Don&apos;t close your website :3
+              </p>
+            </div>
+          </li>
         }
       </ul>
     </div>

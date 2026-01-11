@@ -3,14 +3,13 @@ import { redis } from "@/redis";
 
 export const POST  = async (req) => {
     try {
-        const {bus, licenseNo} = await req.json();
+        const {member, longitude, latitude} = await req.json();
 
         // await redis.set('activedBus', data);
-        await redis.hset("actived_Bus", {
-            [licenseNo] : {
-                ...bus,
-                lastUpdated: new Date().toISOString()
-            }
+        await redis.geoadd("actived_Bus_location", {
+            member: member,
+            longitude: longitude, 
+            latitude: latitude
         });
 
         return NextResponse.json({success: true, saved: bus})
