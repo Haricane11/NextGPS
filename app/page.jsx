@@ -36,7 +36,7 @@ export default function Home() {
         body: JSON.stringify({ member: licenseNoInput, longitude: longitude, latitude: latitude })
       });
 
-      if (!res) {
+      if (!res.ok) {
         const errorText = await res.json();
         alert("Redis Sync Failed:", errorText.error)
       }
@@ -46,7 +46,7 @@ export default function Home() {
 
   }
 
-  const lastLocation = useRef(0);
+  const lastLocation = useRef(null);
 
   useEffect(() => {
     if (!startTracking || !navigator.geolocation) return;
