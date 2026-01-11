@@ -12,7 +12,7 @@ export const POST  = async (req) => {
             latitude: latitude
         });
 
-        return NextResponse.json({success: true, saved: bus})
+        return NextResponse.json({success: true, saved: member})
     } catch(error){
         return NextResponse.json({error: error.message}, { status: 500 })
     }

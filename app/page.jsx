@@ -46,8 +46,6 @@ export default function Home() {
 
   }
 
-
-
   const lastLocation = useRef(0);
 
   useEffect(() => {
