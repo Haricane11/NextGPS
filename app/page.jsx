@@ -1,8 +1,8 @@
 'use client'
-
+import * as turf from "@turf/turf";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import busLineData from "../buslinesData.json";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const [searchResult, setSearchResult] = useState("");
@@ -34,13 +34,58 @@ export default function Home() {
   }
 
 
+    const [userLocation, setUserLocation] = useState(null);
+    
+    const lastLocation = useRef(0);
+
+   useEffect(() => {
+        if (!navigator.geolocation) {
+            console.error("Geolocation not supported");
+            return;
+        }
+
+        const watchId = navigator.geolocation.watchPosition(
+
+            (position) => {
+
+                const { longitude, latitude } = position.coords;
+                const newLocation = [longitude,latitude];
+
+                let distance = 0;
+                console.log(newLocation)
+
+                if (lastLocation.current) {
+                  distance = turf.distance(
+                    turf.point(lastLocation.current),
+                    turf.point(newLocation),
+                    {units: 'meters'}
+                  ) 
+                }
+
+                if (!lastLocation.current || distance > 2) {
+                  console.log(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`);
+                  lastLocation.current = newLocation;
+                  setUserLocation(newLocation)
+                }
+
+            },
+
+            (error) => console.error(error),
+
+
+            { enableHighAccuracy: true }
+
+        );
+        return () => navigator.geolocation.clearWatch(watchId);
+    }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen items-center  bg-[#F2EDE9]  font-sans p-5 gap-10">
       <h1 className="border border-white bg-white text-black shadow-lg rounded-lg p-5">
         🚌. . . . GPS - Bus Tracking . . . . 🚌
       </h1>
-
+      <h1>{userLocation && userLocation.join(", ")}</h1>
       {/* to choose bus line number  */}
       {!chooseResult && !startTracking &&
         <div className="relative">
