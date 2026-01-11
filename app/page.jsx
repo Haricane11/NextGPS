@@ -65,7 +65,7 @@ export default function Home() {
                 if (!lastLocation.current || distance > 2) {
                   console.log(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`);
                   lastLocation.current = newLocation;
-                  setUserLocation(newLocation)
+                  setUserLocation(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`)
                 }
 
             },
