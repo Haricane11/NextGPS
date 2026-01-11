@@ -62,7 +62,7 @@ export default function Home() {
                   ) 
                 }
 
-                if (!lastLocation.current || distance > 2) {
+                if (!lastLocation.current || distance > 3) {
                   console.log(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`);
                   lastLocation.current = newLocation;
                   setUserLocation(`✅ Significant Move: ${distance.toFixed(2)}m. Updating Upstash...`)
@@ -85,7 +85,7 @@ export default function Home() {
       <h1 className="border border-white bg-white text-black shadow-lg rounded-lg p-5">
         🚌. . . . GPS - Bus Tracking . . . . 🚌
       </h1>
-      <h1>{userLocation && userLocation.join(", ")}</h1>
+      <h1>{userLocation}</h1>
       {/* to choose bus line number  */}
       {!chooseResult && !startTracking &&
         <div className="relative">
