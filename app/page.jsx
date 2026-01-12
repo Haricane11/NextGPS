@@ -17,11 +17,8 @@ export default function Home() {
   }
 
   const handleSubmitBus = async () => {
-
     const hasConfirm = confirm(`You choose 🚌 bus line : " ${chooseResult.id} " with license number: "${licenseNoInput}" `);
     if (hasConfirm) {
-
-
       setStartTracking(true)
     }
   }
@@ -47,15 +44,31 @@ export default function Home() {
   }
 
   const lastLocation = useRef(null);
+  const wakeLock = useRef(null);
 
   useEffect(() => {
     if (!startTracking || !navigator.geolocation) return;
 
+    // --- WAKE LOCK LOGIC ---
+      const requestWakeLock = async () => {
+        try {
+          if ('wakeLock' in navigator) {
+            wakeLock.current = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock is active! Screen will stay on.');
+          }
+        } catch (err) {
+          console.error(`${err.name}, ${err.message}`);
+        }
+      };
+
+      requestWakeLock();
+      
     const watchId = navigator.geolocation.watchPosition(
-
       (position) => {
+        const { longitude, latitude, accuracy } = position.coords;
+        // Ignore points that are too inaccurate (greater than 60 meters)
+        if (accuracy > 60) return;
 
-        const { longitude, latitude } = position.coords;
         const newLocation = [longitude, latitude];
 
         let distance = 0;
