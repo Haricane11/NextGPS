@@ -81,7 +81,7 @@ export default function Home() {
           )
         }
 
-        if (!lastLocation.current || distance > 10) {
+        if (!lastLocation.current || distance > 5) {
           lastLocation.current = newLocation;
           sendToRedis(longitude, latitude)
         }
