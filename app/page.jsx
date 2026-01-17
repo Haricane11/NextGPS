@@ -66,8 +66,8 @@ export default function Home() {
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { longitude, latitude, accuracy } = position.coords;
-        // Ignore points that are too inaccurate (greater than 60 meters)
-        if (accuracy > 60) return;
+        // Ignore points that are too inaccurate 
+        if (accuracy > 30) return;
 
         const newLocation = [longitude, latitude];
 
